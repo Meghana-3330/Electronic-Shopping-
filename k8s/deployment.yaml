@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shopping-app-deployment
+  labels:
+    app: shopping-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shopping-app
+  template:
+    metadata:
+      labels:
+        app: shopping-app
+    spec:
+      containers:
+      - name: shopping-app
+        image: ellison/shopping-app:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: DB_HOST
+          value: "shopping-db-service"
+        - name: DB_USER
+          value: "root"
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password

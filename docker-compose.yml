@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: shopping_db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: shoppingcart
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    restart: unless-stopped
+
+  web:
+    build: .
+    container_name: shopping_web
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASS=password
+    depends_on:
+      - db
+    restart: unless-stopped
