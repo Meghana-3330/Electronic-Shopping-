@@ -31,6 +31,7 @@
                                 <th>Product</th>
                                 <th>Quantity</th>
                                 <th>Amount Paid</th>
+                                <th>Payment Method</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -48,6 +49,16 @@
                                     <td class="fw-bold">₹${o.amount}</td>
                                     <td>
                                         <c:choose>
+                                            <c:when test="${o.paymentMethod == 'COD'}">
+                                                <span class="badge bg-info text-dark">Cash on Delivery</span>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge bg-secondary">Card</span>
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
+                                        <c:choose>
                                             <c:when test="${o.shipped}">
                                                 <span class="badge bg-success">Shipped <i class="bi bi-truck"></i></span>
                                             </c:when>
@@ -60,7 +71,7 @@
                             </c:forEach>
                             <c:if test="${empty orders}">
                                 <tr>
-                                    <td colspan="5" class="text-center py-4 text-muted">You have not placed any orders yet.</td>
+                                    <td colspan="6" class="text-center py-4 text-muted">You have not placed any orders yet.</td>
                                 </tr>
                             </c:if>
                         </tbody>

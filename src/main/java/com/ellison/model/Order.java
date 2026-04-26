@@ -9,6 +9,7 @@ public class Order {
     private boolean shipped;
     private String pname; // Joined from product
     private String image; // Joined from product
+    private String paymentMethod;
 
     public Order() {}
 
@@ -28,4 +29,6 @@ public class Order {
     public void setPname(String pname) { this.pname = pname; }
     public String getImage() { return image; }
     public void setImage(String image) { this.image = image; }
+    public String getPaymentMethod() { return paymentMethod; }
+    public void setPaymentMethod(String paymentMethod) { this.paymentMethod = paymentMethod; }
 }

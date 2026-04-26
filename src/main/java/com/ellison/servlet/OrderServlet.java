@@ -11,12 +11,12 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 @WebServlet("/OrderServlet")
 public class OrderServlet extends HttpServlet {
@@ -41,6 +41,9 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
 
+            String paymentMethod = request.getParameter("paymentMethod");
+            if (paymentMethod == null) paymentMethod = "Card";
+
             String orderId = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             String txnId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             double totalAmount = 0;
@@ -54,6 +57,7 @@ public class OrderServlet extends HttpServlet {
                 double amount = item.getQuantity() * item.getPrice();
                 order.setAmount(amount);
                 order.setShipped(false);
+                order.setPaymentMethod(paymentMethod);
                 orderDAO.addOrder(order);
                 totalAmount += amount;
             }
@@ -63,6 +67,7 @@ public class OrderServlet extends HttpServlet {
             txn.setUsername(user.getEmail());
             txn.setTime(new Timestamp(System.currentTimeMillis()));
             txn.setAmount(totalAmount);
+            txn.setPaymentMethod(paymentMethod);
             orderDAO.addTransaction(txn);
 
             cartDAO.clearCart(user.getEmail());
