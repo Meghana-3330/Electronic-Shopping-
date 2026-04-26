@@ -12,6 +12,12 @@ services:
     volumes:
       - ./database.sql:/docker-entrypoint-initdb.d/database.sql
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ppassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
 
   web:
     build: .
@@ -23,5 +29,6 @@ services:
       - DB_USER=root
       - DB_PASS=password
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     restart: unless-stopped

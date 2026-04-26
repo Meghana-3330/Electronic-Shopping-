@@ -41,6 +41,9 @@ public class OrderServlet extends HttpServlet {
                 return;
             }
 
+            String paymentMethod = request.getParameter("paymentMethod");
+            if (paymentMethod == null) paymentMethod = "Card";
+
             String orderId = "ORD-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             String txnId = "TXN-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
             double totalAmount = 0;
@@ -54,6 +57,7 @@ public class OrderServlet extends HttpServlet {
                 double amount = item.getQuantity() * item.getPrice();
                 order.setAmount(amount);
                 order.setShipped(false);
+                order.setPaymentMethod(paymentMethod);
                 orderDAO.addOrder(order);
                 totalAmount += amount;
             }
@@ -63,6 +67,7 @@ public class OrderServlet extends HttpServlet {
             txn.setUsername(user.getEmail());
             txn.setTime(new Timestamp(System.currentTimeMillis()));
             txn.setAmount(totalAmount);
+            txn.setPaymentMethod(paymentMethod);
             orderDAO.addTransaction(txn);
 
             cartDAO.clearCart(user.getEmail());

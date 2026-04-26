@@ -16,13 +16,14 @@ public class OrderDAO {
         boolean status = false;
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO orders (orderid, prodid, username, quantity, amount, shipped) VALUES (?, ?, ?, ?, ?, ?)")) {
+                "INSERT INTO orders (orderid, prodid, username, quantity, amount, shipped, paymentMethod) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
             ps.setString(1, order.getOrderId());
             ps.setInt(2, order.getProdId());
             ps.setString(3, order.getUsername());
             ps.setInt(4, order.getQuantity());
             ps.setDouble(5, order.getAmount());
             ps.setBoolean(6, order.isShipped());
+            ps.setString(7, order.getPaymentMethod());
             if(ps.executeUpdate() > 0) status = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -34,11 +35,12 @@ public class OrderDAO {
         boolean status = false;
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(
-                "INSERT INTO transactions (txnid, username, time, amount) VALUES (?, ?, ?, ?)")) {
+                "INSERT INTO transactions (txnid, username, time, amount, paymentMethod) VALUES (?, ?, ?, ?, ?)")) {
             ps.setString(1, txn.getTxnId());
             ps.setString(2, txn.getUsername());
             ps.setTimestamp(3, txn.getTime());
             ps.setDouble(4, txn.getAmount());
+            ps.setString(5, txn.getPaymentMethod());
             if(ps.executeUpdate() > 0) status = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -50,7 +52,7 @@ public class OrderDAO {
         List<Order> list = new ArrayList<>();
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(
-                "SELECT o.orderid, o.prodid, o.username, o.quantity, o.amount, o.shipped, p.pname, p.image " +
+                "SELECT o.orderid, o.prodid, o.username, o.quantity, o.amount, o.shipped, o.paymentMethod, p.pname, p.image " +
                 "FROM orders o JOIN product p ON o.prodid = p.pid WHERE o.username=? ORDER BY o.orderid DESC")) {
             ps.setString(1, username);
             ResultSet rs = ps.executeQuery();
@@ -62,6 +64,7 @@ public class OrderDAO {
                 o.setQuantity(rs.getInt("quantity"));
                 o.setAmount(rs.getDouble("amount"));
                 o.setShipped(rs.getBoolean("shipped"));
+                o.setPaymentMethod(rs.getString("paymentMethod"));
                 o.setPname(rs.getString("pname"));
                 o.setImage(rs.getString("image"));
                 list.add(o);
@@ -76,7 +79,7 @@ public class OrderDAO {
         List<Order> list = new ArrayList<>();
         try (Connection con = DBUtil.getConnection();
              PreparedStatement ps = con.prepareStatement(
-                "SELECT o.orderid, o.prodid, o.username, o.quantity, o.amount, o.shipped, p.pname, p.image " +
+                "SELECT o.orderid, o.prodid, o.username, o.quantity, o.amount, o.shipped, o.paymentMethod, p.pname, p.image " +
                 "FROM orders o JOIN product p ON o.prodid = p.pid ORDER BY o.orderid DESC")) {
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -87,6 +90,7 @@ public class OrderDAO {
                 o.setQuantity(rs.getInt("quantity"));
                 o.setAmount(rs.getDouble("amount"));
                 o.setShipped(rs.getBoolean("shipped"));
+                o.setPaymentMethod(rs.getString("paymentMethod"));
                 o.setPname(rs.getString("pname"));
                 o.setImage(rs.getString("image"));
                 list.add(o);
